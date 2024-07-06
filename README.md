@@ -15,7 +15,7 @@ add the line `SCHEME = 'https'`
 
 seperate out live domains into a list named `DOMAINS`, and make `ALLOWED_HOSTS` a list which concatenates test domains with `DOMAINS`
 
-```
+```python
 DOMAINS = [
     'publicslate.co.uk',
     'ppl.manicphase.me',
@@ -28,7 +28,8 @@ ALLOWED_HOSTS = DOMAINS + [
 
 ## urls.py
 
-add ```python
+add 
+```python
 
 from django.conf import settings
 from Blog.views import webfinger
