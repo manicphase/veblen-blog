@@ -25,15 +25,17 @@ class LocalActorAdmin(admin.ModelAdmin):
         return TemplateResponse(request, "admin/create_note.html", context)
 
 class CreateNoteForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea)
+    title = forms.CharField(widget=forms.TextInput)
+    summary = forms.CharField(widget=forms.Textarea)
+    body = forms.CharField(widget=forms.Textarea)
     class Meta:
         model = Note
         fields = ['local_actor']
 
     def save(self, commit=True):
-        content = self.cleaned_data['content']
+        data = {k:v for k,v in self.cleaned_data.items() if k != "local_actor"}        
         local_actor = self.cleaned_data['local_actor']
-        return local_actor.create_note(content)
+        return local_actor.create_note(data)
 
 class CreateNoteView(generic.CreateView):
     model = Note

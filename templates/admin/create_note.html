@@ -3,8 +3,13 @@
 <form method="POST">
     {% csrf_token %}
     {{form.local_actor.as_hidden}}
-    {{form.content.label}}
-    {{form.content}}
+    {{form.title.label}}
+    {{form.title}}<br>
+    {{form.summary.label}}
+    {{form.summary}}<br>
+    {{form.body.label}}
+    {{form.body}}
+    {{data}}
     <div>
         <button type="submit">Submit</button>
     </div>

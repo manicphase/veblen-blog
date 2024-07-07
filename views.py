@@ -15,8 +15,8 @@ import re
 # Create your views here.
 
 def index(request):
-    accounts = LocalActor.objects.filter(domain=request.get_host())
-    return render(request, 'index.html', {'accounts': accounts})
+    notes = Note.objects.exclude(local_actor__isnull=True)
+    return render(request, 'Blog/index.html', {'notes': notes})
 
 def guidview(request):
     return HttpResponse('OK?')
@@ -161,14 +161,15 @@ class NoteView(ActorView):
 
     def get(self, request, *args, **kwargs):
         note = self.get_note()
-
+        print(note)
         if self.kwargs.get('content-type') == 'json' or not self.request.accepts('text/html'):
             return JsonResponse(note.note_json())
         else:
-            return render(self.request, 'note.html', {'note': note})
+            return render(self.request, 'Blog/note.html', {'note': note})
 
 class CreateNoteView(CSRFExemptMixin, RequireTokenMixin, ActorView):
     def post(self, request, *args, **kwargs):
         content = request.POST['content']
+        print(content)
         note = self.get_actor().create_note(content)
         return redirect(note.get_absolute_url())

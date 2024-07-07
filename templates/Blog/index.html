@@ -1,0 +1,12 @@
+{% extends 'templates/home/index.html' %}
+{% load static %}
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'styles/note_summary.css' %}">
+{% endblock extrahead %}
+{% block content %}
+    <div>
+        {% for note in notes %}
+        {% include 'templates/Blog/note_summary.html' with note=note %}
+        {% endfor %}
+    </div>
+{% endblock content %}

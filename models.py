@@ -196,8 +196,8 @@ class LocalActor(AbstractActor):
         })
         self.send_to_followers(message)
 
-    def create_note(self, content, **kwargs):
-        note = Note.create(self, content, **kwargs)
+    def create_note(self, blog_json, **kwargs):
+        note = Note.create(self, blog_json, **kwargs)
 
         self.send_to_followers(note.create_message())
         
@@ -382,14 +382,19 @@ class Note(models.Model):
         return data
 
     @classmethod
-    def create(cls, actor, content, to = None, in_reply_to=None, extra_data = None):
+    def create(cls, actor, blog_json, to = None, in_reply_to=None, extra_data = None):
         data = {
-            'content': content,
+            'content': f"""<h1>{blog_json["title"]}</h1>
+                        {blog_json["body"]}"""
         }
+
+        data["veblen"] = blog_json
         if extra_data:
             data.update(extra_data)
 
         data = cls.filter_data(data)
+
+        print(data)
 
         note = cls.objects.create(
             local_actor = actor, 
@@ -453,6 +458,7 @@ class Note(models.Model):
                 'type': 'Tombstone',
             }
         }
+    
 
 @receiver(models.signals.post_save, sender=Note)
 def note_delete_activity(sender, instance, created, **kwargs):
