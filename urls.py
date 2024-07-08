@@ -28,12 +28,20 @@ urlpatterns = [
         views.OutboxView.as_view(),
         name='user_outbox'
     ),
-
     path('<str:username>/notes/<str:uid>',
         views.NoteView.as_view(),
         name='note'
     ),
-    path('<str:username>/notes/<str:uid>/json',
+    path('<str:username>/notes/<str:stub>',
+        views.NoteView.as_view(),
+        name='note'
+    ),
+    #path('<str:username>/notes/<str:uid>/json',
+    #    views.NoteView.as_view(),
+    #    {'content-type': 'json'},
+    #    name='note_json'
+    #),
+    path('<str:username>/notes/<str:stub>/json',
         views.NoteView.as_view(),
         {'content-type': 'json'},
         name='note_json'

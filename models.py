@@ -341,6 +341,7 @@ class Note(models.Model):
     objects = NoteManager()
 
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
+    stub = models.CharField(unique=True, max_length=50)
     local_actor = models.ForeignKey(LocalActor, on_delete = models.CASCADE, related_name='notes', null=True, blank=True)
     remote_actor = models.ForeignKey(RemoteActor, on_delete = models.CASCADE, related_name='notes', null=True, blank=True)
     data = models.JSONField()
@@ -368,6 +369,10 @@ class Note(models.Model):
         if self.local_actor:
             return absolute_reverse('note', username=self.local_actor.username, domain=self.local_actor.domain, uid=str(self.uid))
 
+    def get_stub_url(self):
+        if self.local_actor:
+            return absolute_reverse('note', username=self.local_actor.username, domain=self.local_actor.domain, stub=str(self.stub))
+   
     def __str__(self):
         return bs4.BeautifulSoup(self.data.get('content',''), 'html.parser').text
 
@@ -396,7 +401,21 @@ class Note(models.Model):
 
         print(data)
 
+        def create_stub():
+            if blog_json["title"]:
+                unsafe_stub = blog_json["title"][:50].lower()
+            else:
+                unsafe_stub = blog_json["body"][:50].lower()
+            unsafe_stub = unsafe_stub.replace(" ", "_")
+            safe_stub = "".join([c for c in unsafe_stub if c in 
+                                   "abcdefghijklmnopqrstuvwxyz_"])
+            return safe_stub
+
+        stub = create_stub()
+        print(stub)
+
         note = cls.objects.create(
+            stub = stub,
             local_actor = actor, 
             data = data,
             public = to is None,
@@ -415,12 +434,12 @@ class Note(models.Model):
             data.update({
                 'published': activitystreams.format_datetime(self.published_date),
                 'attributedTo': self.actor.get_absolute_url(),
-                'id': self.get_absolute_url(),
+                'id': self.get_stub_url(),
                 'type': 'Note',
                 'to': [activitystreams.PUBLIC] if self.public else [r.get_absolute_url() for r in self.to.all()]
             })
             if self.in_reply_to:
-                data['inReplyTo'] = self.in_reply_to.get_absolute_url()
+                data['inReplyTo'] = self.in_reply_to.get_stub_url()
 
         return data
 

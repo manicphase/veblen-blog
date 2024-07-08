@@ -11,6 +11,7 @@ from   django.utils.decorators import method_decorator
 from   django.views import View
 import json
 import re
+from uuid import UUID
 
 # Create your views here.
 
@@ -156,8 +157,12 @@ class OutboxView(ActorView):
 
 class NoteView(ActorView):
     def get_note(self):
-        uid = self.kwargs['uid']
-        return self.get_actor().notes.get(uid = uid)
+        uid = self.kwargs.get('uid')
+        try:
+            UUID(uid, version=4) 
+            return self.get_actor().notes.get(uid = uid)
+        except:
+            return self.get_actor().notes.get(stub=uid)
 
     def get(self, request, *args, **kwargs):
         note = self.get_note()

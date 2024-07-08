@@ -1,5 +1,5 @@
 <div>
-    <h2 class="compact_heading"><a href="{{note.get_absolute_url}}">{{note.data.veblen.title}}</a></h2>
+    <h2 class="compact_heading"><a href="{{note.get_stub_url}}">{{note.data.veblen.title}}</a></h2>
 {{note.actor.display_name}} - {{note.published_date}}<br><br>
 {% if note.data.veblen.summary %}
     {{ note.data.veblen.summary }}

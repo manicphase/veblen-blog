@@ -14,7 +14,7 @@
             <strong class="display-name">{{note.actor.display_name}}</strong>
             <small class="address">{{note.actor.qualified_name}}</small>
         </a>
-        <a class="time" href="{{note.get_absolute_url}}"><time>{{note.published_date}}</time></a>
+        <a class="time" href="{{note.get_stub_url}}"><time>{{note.published_date}}</time></a>
         <div class="stats">
             <div class="likes">{% blocktranslate count likes=note.likes.count %}1 like{% plural %}{{likes}} likes{% endblocktranslate %}</div>
             <div class="announces">{% blocktranslate count announces=note.announces.count %}1 boost{% plural %}{{announces}} boosts{% endblocktranslate %}</div>
