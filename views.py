@@ -19,6 +19,9 @@ def index(request):
     notes = Note.objects.exclude(local_actor__isnull=True)
     return render(request, 'Blog/index.html', {'notes': notes})
 
+def create_blog(request):
+    return render(request, "Blog/create_blog.html")
+
 def guidview(request):
     return HttpResponse('OK?')
 

@@ -1,0 +1,22 @@
+{% extends 'templates/home/index.html' %}
+{% load static %}
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'styles/create_blog.css' %}">
+    <script src="{% static 'scripts/create_blog.js' %}" />
+{% endblock extrahead %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    Title:<br><input type="text" name="title" class="title_input" id="title_input"/><br>
+    Summary:<br><textarea name="summary" class="summary_input"></textarea><br>
+    Body:<br><textarea name="body" class="body_input" id="body_input" onkeypress="body_changed()"></textarea><br>
+
+    <div class="preview_container">
+    <div class="page_break"><i>preview</i></div>    
+    <div id="preview_content" class="preview_content">preview content</div>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,15 @@
+.title_input {
+    width: 100%;
+}
+.summary_input {
+    width: 100%;
+}
+.body_input {
+    width: 100%;
+    height: 200px;
+}
+.page_break {
+    width:100%;
+    text-align: center;
+    color: dimgrey;
+}

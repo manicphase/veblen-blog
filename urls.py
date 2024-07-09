@@ -4,6 +4,11 @@ from . import views
 urlpatterns = [
     path('', views.index, name="index"),
 
+    path('create_blog',
+         views.create_blog,
+         name="create_blog"
+         ),
+
     path('object/<uuid:guid>', 
         views.guidview,
         name='guid'

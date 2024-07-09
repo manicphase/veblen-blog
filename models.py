@@ -12,6 +12,7 @@ from   django.db import models
 from   django.dispatch import receiver
 from   django.utils.module_loading import import_string
 from   django.utils.timezone import now
+from   django.contrib.auth.models import User
 import functools
 import json
 from   pathlib import Path
@@ -75,6 +76,7 @@ def local_actor_dir(instance, filename):
     return p / filename
 
 class LocalActor(AbstractActor):
+    owner = models.ForeignKey(User, related_name="activitypub_account", on_delete=models.CASCADE, null=True)
     private_key_file = models.FileField(upload_to = local_actor_dir)
     public_key_file = models.FileField(upload_to = local_actor_dir)
     actor_json_file = models.FileField(upload_to = local_actor_dir, null=True, blank=True)
