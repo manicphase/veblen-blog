@@ -1,0 +1,15 @@
+<div class="comment">
+    <a href="{{comment.remote_actor.url}}">
+        {{comment.remote_actor.profile.preferredUsername}}
+    </a>   
+    <small>
+        {{comment.remote_actor}}<br>
+    </small>
+    {{comment.data.content|safe}}
+    <small>
+        {% include 'templates/Blog/interactions.html' with note=comment %}
+    </small>
+    {% for reply in comment.replies.all %}
+        {% include 'templates/Blog/comment.html' with comment=reply %}
+    {% endfor %}
+</div>

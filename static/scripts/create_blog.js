@@ -1,5 +1,3 @@
-
-
 function body_changed() {
     title_input = document.getElementById("title_input");
     body_input = document.getElementById("body_input");    

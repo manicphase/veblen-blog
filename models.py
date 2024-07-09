@@ -338,12 +338,30 @@ class NoteManager(models.Manager):
 
         uid = m.kwargs['uid']
         return self.get(uid=uid)
+    
+    def get_by_stub_url(self, url):
+        try:
+            return self.get(stub=url)
+        except:
+            pass
+        stub = url.split("/")[-1]
+        #print(f"full path: {fullpath}")
+        """try:
+            m = absolute_resolve(url)
+        except Exception:
+            raise Exception(f"Can't reverse URL {url}")
+        if not m:
+            raise Note.DoesNotExist
+        print("MMMMMMMMMMMMMMMMM")
+        print(m)
+        uid = m.kwargs['uid']"""
+        return self.get(stub=stub)
 
 class Note(models.Model):
     objects = NoteManager()
 
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
-    stub = models.CharField(unique=True, max_length=50)
+    stub = models.CharField(unique=True, max_length=100)
     local_actor = models.ForeignKey(LocalActor, on_delete = models.CASCADE, related_name='notes', null=True, blank=True)
     remote_actor = models.ForeignKey(RemoteActor, on_delete = models.CASCADE, related_name='notes', null=True, blank=True)
     data = models.JSONField()
@@ -401,6 +419,7 @@ class Note(models.Model):
 
         data = cls.filter_data(data)
 
+        print("########################")
         print(data)
 
         def create_stub():
@@ -414,7 +433,6 @@ class Note(models.Model):
             return safe_stub
 
         stub = create_stub()
-        print(stub)
 
         note = cls.objects.create(
             stub = stub,
@@ -431,6 +449,8 @@ class Note(models.Model):
     @activitystreams.with_context()
     def note_json(self):
         data = self.data.copy()
+
+        print("in note json")
         
         if self.local_actor:
             data.update({

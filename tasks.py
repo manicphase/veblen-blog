@@ -74,11 +74,20 @@ def save_mention(recipient, activity):
     note_json = activity['object']
 
     try:
-        in_reply_to = Note.objects.get_by_absolute_url(note_json.get('inReplyTo'))
-    except Exception:
+        print(note_json.get('inReplyTo'))
+        in_reply_to = Note.objects.get_by_stub_url(note_json.get('inReplyTo'))
+    except:
+        try:
+            in_reply_to = Note.objects.get_by_absolute_url(note_json.get('inReplyTo'))
+        except:
+            in_reply_to = None
         in_reply_to = None
+    
+    print("DATA")
+    print(in_reply_to)
 
     note = Note.objects.create(
+        stub = note_json["id"],
         remote_actor = remote_actor,
         data = note_json,
         published_date = dateparse.parse_datetime(note_json.get('published')),

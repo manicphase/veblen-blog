@@ -1,3 +1,4 @@
+from pprint import pprint
 from   .absolute_url import absolute_reverse
 from   .inbox import InboxException, get_inbox_handlers
 from   .models import LocalActor, RemoteActor, Note
@@ -9,6 +10,8 @@ from   django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, Ht
 from   django.shortcuts import render, redirect
 from   django.utils.decorators import method_decorator
 from   django.views import View
+from django.contrib.auth.models import User
+
 import json
 import re
 from uuid import UUID
@@ -20,7 +23,15 @@ def index(request):
     return render(request, 'Blog/index.html', {'notes': notes})
 
 def create_blog(request):
-    return render(request, "Blog/create_blog.html")
+    if request.method == "GET":
+        return render(request, "Blog/create_blog.html")
+    elif request.method == "POST":
+        user = User.objects.get(username=request.session["user"])
+        actor = user.activitypub_account.get()
+        note = {k:v for k, v in request.POST.items() if k in ["title","summary","body"]}
+        print(note)
+        response = actor.create_note(note)
+        return redirect(response.get_stub_url())
 
 def guidview(request):
     return HttpResponse('OK?')
@@ -171,7 +182,9 @@ class NoteView(ActorView):
         note = self.get_note()
         print(note)
         if self.kwargs.get('content-type') == 'json' or not self.request.accepts('text/html'):
-            return JsonResponse(note.note_json())
+            print("return json")
+            print(note.note_json())
+            return JsonResponse(note.note_json(), content_type='application/activity+json')
         else:
             return render(self.request, 'Blog/note.html', {'note': note})
 
