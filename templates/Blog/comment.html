@@ -1,11 +1,11 @@
 <div class="comment">
-    <a href="{{comment.remote_actor.url}}">
-        {{comment.remote_actor.profile.preferredUsername}}
+    <a href="{{comment.actor.url}}">
+        {{comment.actor.profile.preferredUsername}}
     </a>   
     <small>
-        {{comment.remote_actor}}<br>
+        {{comment.actor}}<br>
     </small>
-    {{comment.data.content|safe}}
+    {{comment.data.content|safe}}<br>
     <button type="link" onclick="show_hide_interactions('{{comment.uid}}')">reply to comment</button>
     <div id="reply-{{comment.uid}}" class="comment_interactions">
         {% include 'templates/Blog/interaction_modal.html' with comment=comment %}

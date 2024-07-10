@@ -32,6 +32,14 @@ def create_blog(request):
         print(note)
         response = actor.create_note(note)
         return redirect(response.get_stub_url())
+    
+def post_comment(request):
+    user = User.objects.get(username=request.session["user"])
+    actor = user.activitypub_account.get()
+    target_comment = Note.objects.get(uid=request.POST["comment_id"])
+    actor.create_note(None, content=request.POST["content"], in_reply_to=target_comment)
+    print(target_comment)
+    print(request.POST)
 
 def guidview(request):
     return HttpResponse('OK?')

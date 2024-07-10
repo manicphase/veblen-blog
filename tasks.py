@@ -67,8 +67,6 @@ def remove_announce(actor, activity):
 
 @task()
 def delete_note(actor, activity):
-    print("DELETE")
-    pprint(activity)
     from .models import Note
     note = Note.objects.get_by_stub_url(activity["object"])
     note.delete()

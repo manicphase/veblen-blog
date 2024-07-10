@@ -1,4 +1,7 @@
-responding to {{comment.remote_actor}}
-<form method="POST">
-    <textarea name="content" action="post_comment"></textarea>
+responding to {{comment.actor}}
+<form method="POST" action="/blog/post_comment">
+    {% csrf_token %}
+    <input type="hidden" name="comment_id" value="{{comment.uid}}">
+    <textarea name="content" ></textarea>
+    <button type="submit">Post comment</button>
 </form>

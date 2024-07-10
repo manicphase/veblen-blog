@@ -385,13 +385,19 @@ class Note(models.Model):
     def actor(self):
         return self.local_actor if self.local_actor else self.remote_actor
 
+    def get_stub_or_url(self):
+        if self.stub.startswith("https"):
+            return self.stub
+        return self.get_absolute_url()
+
     def get_absolute_url(self):
         if self.local_actor:
             return absolute_reverse('note', username=self.local_actor.username, domain=self.local_actor.domain, uid=str(self.uid))
 
     def get_stub_url(self):
-        if self.local_actor:
-            return absolute_reverse('note', username=self.local_actor.username, domain=self.local_actor.domain, stub=str(self.stub))
+        #if self.local_actor:
+        if self.stub.startswith("http"): return self.stub
+        return absolute_reverse('note', username=self.local_actor.username, domain=self.local_actor.domain, stub=str(self.stub))
    
     def __str__(self):
         return bs4.BeautifulSoup(self.data.get('content',''), 'html.parser').text
@@ -407,22 +413,31 @@ class Note(models.Model):
         return data
 
     @classmethod
-    def create(cls, actor, blog_json, to = None, in_reply_to=None, extra_data = None):
-        data = {
-            'content': f"""<h1>{blog_json["title"]}</h1>
-                        {blog_json["body"]}"""
-        }
+    def create(cls, actor, blog_json=None, content=None, to = None, in_reply_to=None, extra_data = None):
+        if blog_json:
+            data = {
+                'content': f"""<h1>{blog_json["title"]}</h1>
+                            {blog_json["body"]}"""
+            }
 
-        data["veblen"] = blog_json
+            data["veblen"] = blog_json
+        if content:
+            data = {"content": content}
+        if in_reply_to:
+            data["inReplyTo"] = str(in_reply_to.stub)
+            data["@context"] = "https://www.w3.org/ns/activitystreams"
+            data["type"] = "Note"
         if extra_data:
             data.update(extra_data)
 
-        data = cls.filter_data(data)
+        #data = cls.filter_data(data)
 
         print("########################")
         print(data)
 
         def create_stub():
+            if not blog_json:
+                return str(uuid.uuid4())
             if blog_json["title"]:
                 unsafe_stub = blog_json["title"][:50].lower()
             else:
@@ -461,7 +476,27 @@ class Note(models.Model):
                 'to': [activitystreams.PUBLIC] if self.public else [r.get_absolute_url() for r in self.to.all()]
             })
             if self.in_reply_to:
+                print("INREPLYTO", self.in_reply_to)
+                print(self.in_reply_to.get_stub_url())
+                stub = self.in_reply_to.stub
                 data['inReplyTo'] = self.in_reply_to.get_stub_url()
+                
+            print("NOTEJSONTHINGY")
+            replies = self.replies.all()
+            reply_items = []
+            for r in replies:
+                reply_items.append({
+                        "type": "Note",
+                        "content": r.content(),
+                        "inReplyTo": r.in_reply_to.get_stub_url()
+                })
+
+            data["replies"] = {
+                "type": "Collection",
+                "totalItems": len(reply_items),
+                "items": reply_items}
+            
+            print(data)
 
         return data
 

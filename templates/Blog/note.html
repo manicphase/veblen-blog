@@ -10,17 +10,21 @@
 {% block title %}{{note.actor.display_name}} - {{note.content}}{% endblock title %}
 
 {% block content %}
-        <h1 class="compact_heading">{{note.data.veblen.title}}</h1>
-        {% include 'templates/Blog/main_note_details.html' %}
+{% if note.data.veblen %}
+    <h1 class="compact_heading">{{note.data.veblen.title}}</h1>
+    {% include 'templates/Blog/main_note_details.html' %}
 
-        {% if note.data.veblen.summary %}
-        <div>
-            <i>{{note.data.veblen.summary}}</i><br><br>
-        </div>
-        {% endif %}
-        <div class="content">
+    {% if note.data.veblen.summary %}
+    <div>
+        <i>{{note.data.veblen.summary}}</i><br><br>
+    </div>
+    {% endif %}
+    <div class="content">
         {{note.data.veblen.body|safe}}
     </div>
+{% else %}
+{% include "templates/Blog/comment.html" with comment=note %}
+{% endif %}
 {% include 'templates/Blog/interactions.html' with note=note %}
 {% if note.replies.exists %}
 <h2>Comments</h2>

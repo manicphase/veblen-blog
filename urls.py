@@ -13,6 +13,10 @@ urlpatterns = [
         views.guidview,
         name='guid'
     ),
+    path("post_comment",
+        views.post_comment,
+        name="post_comment"
+    ),
     path('<str:username>',
         views.ProfileView.as_view(),
         name='user_profile'
