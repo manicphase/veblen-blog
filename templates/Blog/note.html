@@ -1,9 +1,9 @@
-{% extends 'templates/home/index.html' %}
+{% extends "Blog/base.html" %}
 {% load static %}
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'styles/note_summary.css' %}">
     <link rel="stylesheet" href="{% static 'styles/comment.css' %}">
-
+    <script src="{% static 'scripts/comment_interactions.js' %}"></script>
 {% endblock extrahead %}
 {% load i18n %}
 

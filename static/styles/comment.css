@@ -1,3 +1,6 @@
 .comment {
     margin-left: 10px;
 }
+.comment_interactions {
+    display: none;
+}

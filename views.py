@@ -105,7 +105,7 @@ class ProfileView(ActorView):
         return [
             f'by_domain/{actor.domain}/by_user/{actor.username}/profile.html',
             f'by_domain/{actor.domain}/profile.html',
-            'profile.html',
+            'Blog/profile.html',
         ]
 
     def get(self, request, *args, **kwargs):
