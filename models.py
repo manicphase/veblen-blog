@@ -510,4 +510,7 @@ def note_delete_activity(sender, instance, created, **kwargs):
 @receiver(models.signals.pre_delete, sender=Note)
 def note_delete_activity(sender, instance, **kwargs):
     note = instance
-    note.actor.send_to_followers(note.delete_json())
+    try:
+        note.actor.send_to_followers(note.delete_json())
+    except:
+        pass

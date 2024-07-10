@@ -112,6 +112,9 @@ class InboxHandler(AbstractInboxHandler):
             'actor': self.actor.get_absolute_url(),
             'object': activity,
         })
+    
+    def handle_Delete(self, activity):
+        tasks.delete_note(self.actor, activity)
 
 inbox_handlers = [
     (InboxHandler, {}),

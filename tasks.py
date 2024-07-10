@@ -66,6 +66,15 @@ def remove_announce(actor, activity):
     note.announces.remove(remote_actor)
 
 @task()
+def delete_note(actor, activity):
+    print("DELETE")
+    pprint(activity)
+    from .models import Note
+    note = Note.objects.get_by_stub_url(activity["object"])
+    note.delete()
+
+
+@task()
 def save_mention(recipient, activity):
     from .models import Note, RemoteActor
 
