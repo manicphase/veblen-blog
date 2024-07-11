@@ -1,11 +1,17 @@
 <div class="comment">
-    <a href="{{comment.actor.url}}">
-        {{comment.actor.profile.preferredUsername}}
+    <a href="{{comment.actor.get_absolute_url}}">
+        {% if comment.actor.profile.preferredUsername %}
+            {{comment.actor.profile.preferredUsername}}
+        {% else %}
+            {{comment.actor.username}}
+        {% endif %}
     </a>   
     <small>
         {{comment.actor}}<br>
     </small>
-    {{comment.data.content|safe}}<br>
+    <p>
+        {{comment.data.content|safe}}
+    </p>
     <button type="link" onclick="show_hide_interactions('{{comment.uid}}')">reply to comment</button>
     <div id="reply-{{comment.uid}}" class="comment_interactions">
         {% include 'templates/Blog/interaction_modal.html' with comment=comment %}

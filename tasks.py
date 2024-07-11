@@ -40,28 +40,28 @@ def remove_follower(actor, follower_url):
 @task()
 def add_like(actor, activity):
     from .models import Note, RemoteActor
-    note = Note.objects.get_by_absolute_url(activity['object'])
+    note = Note.objects.get_by_stub_url(activity['object'])
     remote_actor = RemoteActor.objects.get_by_url(actor, activity['actor'])
     note.likes.add(remote_actor)
 
 @task()
 def remove_like(actor, activity):
     from .models import Note, RemoteActor
-    note = Note.objects.get_by_absolute_url(activity['object']['object'])
+    note = Note.objects.get_by_stub_url(activity['object']['object'])
     remote_actor = RemoteActor.objects.get_by_url(actor, activity['actor'])
     note.likes.remove(remote_actor)
 
 @task()
 def add_announce(actor, activity):
     from .models import Note, RemoteActor
-    note = Note.objects.get_by_absolute_url(activity['object'])
+    note = Note.objects.get_by_stub_url(activity['object'])
     remote_actor = RemoteActor.objects.get_by_url(actor, activity['actor'])
     note.announces.add(remote_actor)
 
 @task()
 def remove_announce(actor, activity):
     from .models import Note, RemoteActor
-    note = Note.objects.get_by_absolute_url(activity['object']['object'])
+    note = Note.objects.get_by_stub_url(activity['object']['object'])
     remote_actor = RemoteActor.objects.get_by_url(actor, activity['actor'])
     note.announces.remove(remote_actor)
 

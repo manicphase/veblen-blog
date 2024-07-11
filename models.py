@@ -1,3 +1,4 @@
+from pprint import pprint
 from   .send_signed_message import authorized_fetch
 from   . import activitystreams
 from   . import tasks
@@ -496,7 +497,7 @@ class Note(models.Model):
                 "totalItems": len(reply_items),
                 "items": reply_items}
             
-            print(data)
+            pprint(data)
 
         return data
 

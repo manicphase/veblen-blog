@@ -38,8 +38,7 @@ def post_comment(request):
     actor = user.activitypub_account.get()
     target_comment = Note.objects.get(uid=request.POST["comment_id"])
     actor.create_note(None, content=request.POST["content"], in_reply_to=target_comment)
-    print(target_comment)
-    print(request.POST)
+    return redirect(request.META["HTTP_REFERER"]) # TODO: check if this is too jank
 
 def guidview(request):
     return HttpResponse('OK?')
