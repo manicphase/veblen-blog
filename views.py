@@ -19,7 +19,7 @@ from uuid import UUID
 # Create your views here.
 
 def index(request):
-    notes = Note.objects.exclude(local_actor__isnull=True)
+    notes = Note.objects.filter(post_type="Article").exclude(local_actor__isnull=True)
     return render(request, 'Blog/index.html', {'notes': notes})
 
 def create_blog(request):
@@ -103,7 +103,11 @@ class RequireTokenMixin:
 class ActorView(View):
     def get_actor(self):
         username = self.kwargs['username']
-        return LocalActor.objects.get(username = username, domain = self.request.get_host())
+        print(f"getting user {username}")
+        try:
+            return LocalActor.objects.get(username = username, domain = self.request.get_host())
+        except:
+            print(f"can't find user '{username}'")
 
 class ProfileView(ActorView):
     def get_template_names(self):
@@ -148,6 +152,8 @@ class FollowersView(ActorView):
 class InboxView(CSRFExemptMixin, ActorView):
     def post(self, request, *args, **kwargs):
         activity = json.load(request)
+        print("ACTIVITY")
+        pprint(activity)
 
         actor = self.get_actor()
         inbox_handlers = get_inbox_handlers(actor, activity)
@@ -188,7 +194,10 @@ class NoteView(ActorView):
     def get(self, request, *args, **kwargs):
         note = self.get_note()
         print(note)
-        if self.kwargs.get('content-type') == 'json' or not self.request.accepts('text/html'):
+        print("KWARGS")
+        pprint(self.kwargs)
+        pprint(request.headers)
+        if self.kwargs.get('content-type') == 'json' or "json" in request.headers.get("Accept"):
             print("return json")
             print(note.note_json())
             return JsonResponse(note.note_json(), content_type='application/activity+json')

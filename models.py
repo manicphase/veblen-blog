@@ -217,6 +217,8 @@ class AccessToken(models.Model):
 
 class RemoteActorManager(models.Manager):
     def create_from_profile_data(self, profile_data):
+        print("CREAT REMOTE ACTOR")
+        pprint(profile_data)
         url = profile_data['id']
         username = profile_data['preferredUsername']
         domain = urllib.parse.urlparse(url).netloc
@@ -372,6 +374,7 @@ class Note(models.Model):
     announces = models.ManyToManyField(RemoteActor, related_name='announces', blank=True)
     public = models.BooleanField(default=True)
     mentions = models.ManyToManyField(LocalActor, related_name='mentions', blank=True)
+    post_type = models.TextField(max_length=20)
 
     updated_at = models.DateTimeField(null = True, auto_now = True)
 
@@ -420,6 +423,7 @@ class Note(models.Model):
                 'content': f"""<h1>{blog_json["title"]}</h1>
                             {blog_json["body"]}"""
             }
+            data["type"] = "Note"
 
             data["veblen"] = blog_json
         if content:
@@ -427,7 +431,7 @@ class Note(models.Model):
         if in_reply_to:
             data["inReplyTo"] = str(in_reply_to.stub)
             data["@context"] = "https://www.w3.org/ns/activitystreams"
-            data["type"] = "Note"
+            data["type"] = "Reply"
         if extra_data:
             data.update(extra_data)
 
@@ -455,7 +459,8 @@ class Note(models.Model):
             local_actor = actor, 
             data = data,
             public = to is None,
-            in_reply_to = in_reply_to
+            in_reply_to = in_reply_to,
+            post_type = data.get("type","Note")
         )
         if to is not None:
             note.to.set(to)
@@ -536,6 +541,13 @@ class Note(models.Model):
             }
         }
     
+class Attachment(models.Model):
+    uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
+    filepath = models.TextField(max_length=200)
+    thumbnail_path = models.TextField(max_length=200)
+    description = models.TextField(max_length=500, null=True, blank=True)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE, null=True, blank=True, related_name="attachment")
+    owner = models.ForeignKey(LocalActor, on_delete=models.CASCADE, related_name="attachment")
 
 @receiver(models.signals.post_save, sender=Note)
 def note_delete_activity(sender, instance, created, **kwargs):
