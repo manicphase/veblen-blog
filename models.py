@@ -165,7 +165,6 @@ class LocalActor(AbstractActor):
         return absolute_reverse('user_outbox', username=self.username, domain=self.domain)
 
     def send_to_followers(self, message):
-        print("Sending\n"+json.dumps(message, indent=2))
         self.distribute_message(message, self.followers.all())
 
     def get_public_key_url(self):
@@ -217,8 +216,6 @@ class AccessToken(models.Model):
 
 class RemoteActorManager(models.Manager):
     def create_from_profile_data(self, profile_data):
-        print("CREAT REMOTE ACTOR")
-        pprint(profile_data)
         url = profile_data['id']
         username = profile_data['preferredUsername']
         domain = urllib.parse.urlparse(url).netloc
@@ -297,7 +294,6 @@ def apply_mentions(data):
         domain = m.group('domain')
         mentioned.append((username, domain))
 
-    print(mentioned)
     unique_mentioned = {}
     for (username, domain) in mentioned:
         try:
@@ -423,7 +419,7 @@ class Note(models.Model):
                 'content': f"""<h1>{blog_json["title"]}</h1>
                             {blog_json["body"]}"""
             }
-            data["type"] = "Note"
+            data["type"] = "Article"
 
             data["veblen"] = blog_json
         if content:
@@ -434,11 +430,6 @@ class Note(models.Model):
             data["type"] = "Reply"
         if extra_data:
             data.update(extra_data)
-
-        #data = cls.filter_data(data)
-
-        print("########################")
-        print(data)
 
         def create_stub():
             if not blog_json:
@@ -470,8 +461,6 @@ class Note(models.Model):
     @activitystreams.with_context()
     def note_json(self):
         data = self.data.copy()
-
-        print("in note json")
         
         if self.local_actor:
             data.update({
@@ -482,12 +471,9 @@ class Note(models.Model):
                 'to': [activitystreams.PUBLIC] if self.public else [r.get_absolute_url() for r in self.to.all()]
             })
             if self.in_reply_to:
-                print("INREPLYTO", self.in_reply_to)
-                print(self.in_reply_to.get_stub_url())
                 stub = self.in_reply_to.stub
                 data['inReplyTo'] = self.in_reply_to.get_stub_url()
                 
-            print("NOTEJSONTHINGY")
             replies = self.replies.all()
             reply_items = []
             for r in replies:
@@ -502,8 +488,6 @@ class Note(models.Model):
                 "totalItems": len(reply_items),
                 "items": reply_items}
             
-            pprint(data)
-
         return data
 
     def add_unique_id(self, message):
