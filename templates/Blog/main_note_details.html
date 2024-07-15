@@ -1,1 +1,1 @@
-{{note.actor.display_name}} - {{note.published_date}}<br><br>
+Posted by <a href="{{note.actor.get_absolute_url}}">{{note.actor.display_name}}</a> - {{note.published_date|date:"d F Y"}}

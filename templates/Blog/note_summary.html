@@ -2,6 +2,11 @@
     <h2 class="compact_heading"><a href="{{note.get_stub_url}}">{{note.data.veblen.title}}</a></h2>
 
 {% include 'templates/Blog/main_note_details.html' %}
+{% if note.data.attachment %}
+    <a href="{{note.get_stub_url}}">
+        <img class="title_image_slice" src="{{note.data.attachment.0.url}}"/><br>
+    </a>
+{% endif %}
 {% if note.data.veblen.summary %}
     {{ note.data.veblen.summary }}
 {% else %}

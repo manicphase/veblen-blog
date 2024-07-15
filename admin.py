@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.views import generic
-from .models import LocalActor, Note
+from .models import Attachment, LocalActor, Note
 
 # Register your models here.
 class LocalActorAdmin(admin.ModelAdmin):
@@ -89,3 +89,4 @@ class NoteAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 admin.site.register(Note, NoteAdmin)
+admin.site.register(Attachment)

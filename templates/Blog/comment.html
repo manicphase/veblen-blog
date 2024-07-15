@@ -13,8 +13,10 @@
         {{comment.data.content|safe}}
     </p>
     <button type="link" onclick="show_hide_interactions('{{comment.uid}}')">reply to comment</button>
+    <button type="link" onclick="like_comment('{{comment.uid}}')">Like</button>
     <div id="reply-{{comment.uid}}" class="comment_interactions">
-        {% include 'templates/Blog/interaction_modal.html' with comment=comment %}
+            {% include 'templates/Blog/interaction_modal.html' with comment=comment %}
+
     </div>
     <small>
         {% include 'templates/Blog/interactions.html' with note=comment %}

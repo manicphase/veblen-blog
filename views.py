@@ -1,7 +1,7 @@
 from pprint import pprint
 from   .absolute_url import absolute_reverse
 from   .inbox import InboxException, get_inbox_handlers
-from   .models import LocalActor, RemoteActor, Note
+from   .models import Attachment, LocalActor, RemoteActor, Note
 from   django.conf import settings
 from   django.core.exceptions import PermissionDenied
 from   django.core.paginator import Paginator
@@ -26,10 +26,19 @@ def create_blog(request):
     if request.method == "GET":
         return render(request, "Blog/create_blog.html")
     elif request.method == "POST":
+        print(request.FILES)
+        title_image = request.FILES.get("compressed_title_image")
+        print(title_image)
         user = User.objects.get(username=request.session["user"])
         actor = user.activitypub_account.get()
         note = {k:v for k, v in request.POST.items() if k in ["title","summary","body"]}
-        print(note)
+        try:
+            note["title_image"] = request.FILES.get("compressed_title_image")
+        except:
+            pass
+        #print("NOOOOOOOOOOTE")
+        #print(note)
+        #pprint(request.POST)
         response = actor.create_note(note)
         return redirect(response.get_stub_url())
     

@@ -34,12 +34,10 @@ class AbstractInboxHandler:
         """
             Generic method to handle mentions when a Create activity is received.
         """
-        print("Create activity")
         obj = activity.get('object',{})
         if obj.get('type') != 'Note':
             return
         
-        pprint(activity)
 
         # don't understand if list is optional here. doesn't work in gotosocial
         tag = obj.get("tag")
@@ -50,7 +48,6 @@ class AbstractInboxHandler:
         
         
         if mentions_me:
-            print("MENTIONS ME")
             self.handle_mention(activity)
 
     def handle_mention(self, activity):

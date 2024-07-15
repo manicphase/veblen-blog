@@ -2,13 +2,17 @@
 {% load static %}
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'styles/create_blog.css' %}">
-    <script src="{% static 'scripts/create_blog.js' %}" />
+    <script src="{% static 'scripts/create_blog.js' %}" ></script>
+    <script src="{% static 'scripts/image_compressor.js' %}" ></script>
 {% endblock extrahead %}
 {% block content %}
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     Title:<br><input type="text" name="title" class="title_input" id="title_input"/><br>
     Summary:<br><textarea name="summary" class="summary_input"></textarea><br>
+    Title image:<br><input type="file" id="image_upload_button" name="file_upload" onchange="triggerCompression()"><br>
+    <img id="compressed_image" src="" name="compressed_image"/>
+    <input type="file" name="compressed_title_image" id="compressed_title_image" hidden></input>
     Body:<br><textarea name="body" class="body_input" id="body_input" onkeypress="body_changed()"></textarea><br>
 
     <div class="preview_container">

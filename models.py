@@ -20,6 +20,7 @@ from   pathlib import Path
 import re
 import urllib.parse
 import uuid
+from   django.core.files import File
 
 def default_empty():
     return {}
@@ -70,11 +71,13 @@ class AbstractActor(models.Model):
     def get_public_key(self):
         raise NotImplementedError
 
-
+#from django.core.files.storage import FileSystemStorage
 def local_actor_dir(instance, filename):
+    print(instance, filename)
     p = Path(settings.ACTORS_DIR) / instance.domain / instance.username
     p.mkdir(exist_ok = True, parents=True)
-    return p / filename
+    return p / filename+">test"
+
 
 class LocalActor(AbstractActor):
     owner = models.ForeignKey(User, related_name="activitypub_account", on_delete=models.CASCADE, null=True)
@@ -414,23 +417,7 @@ class Note(models.Model):
 
     @classmethod
     def create(cls, actor, blog_json=None, content=None, to = None, in_reply_to=None, extra_data = None):
-        if blog_json:
-            data = {
-                'content': f"""<h1>{blog_json["title"]}</h1>
-                            {blog_json["body"]}"""
-            }
-            data["type"] = "Article"
-
-            data["veblen"] = blog_json
-        if content:
-            data = {"content": content}
-        if in_reply_to:
-            data["inReplyTo"] = str(in_reply_to.stub)
-            data["@context"] = "https://www.w3.org/ns/activitystreams"
-            data["type"] = "Reply"
-        if extra_data:
-            data.update(extra_data)
-
+        title_image = None
         def create_stub():
             if not blog_json:
                 return str(uuid.uuid4())
@@ -445,6 +432,39 @@ class Note(models.Model):
 
         stub = create_stub()
 
+        if blog_json:
+            title_image = blog_json.get("title_image", None)
+            summary = blog_json.get("summary")
+            if summary:
+                body_content = summary
+            else:
+                body_content = blog_json["body"][:300]
+            data = {
+                'content': f"""<h1>{blog_json["title"]}</h1>
+                            {body_content}<br><br>
+                            <a href='{actor.get_absolute_url()}/notes/{stub}'>Read article</a>"""
+            }
+            data["type"] = "Article"
+
+            data["veblen"] = blog_json
+        if content:
+            data = {"content": content}
+        if in_reply_to:
+            data["inReplyTo"] = str(in_reply_to.stub)
+            data["@context"] = "https://www.w3.org/ns/activitystreams"
+            data["type"] = "Reply"
+        if extra_data:
+            data.update(extra_data)
+
+        if title_image:
+            del blog_json["title_image"]
+
+
+        #stub = create_stub()
+
+        print("DAAATAAAAA")
+        pprint(data)
+
         note = cls.objects.create(
             stub = stub,
             local_actor = actor, 
@@ -455,6 +475,13 @@ class Note(models.Model):
         )
         if to is not None:
             note.to.set(to)
+        if title_image:
+            attachment = Attachment(owner=actor, note=note, image=title_image)
+            attachment.save()
+            note.data["attachment"] = [{"type": "Image",
+                                "mediaType": "image/png",
+                                "url": attachment.image_url(),}]
+            note.save()
 
         return note
 
@@ -527,11 +554,13 @@ class Note(models.Model):
     
 class Attachment(models.Model):
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
-    filepath = models.TextField(max_length=200)
-    thumbnail_path = models.TextField(max_length=200)
+    image = models.ImageField(upload_to="media/attachments", null=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     note = models.ForeignKey(Note, on_delete=models.CASCADE, null=True, blank=True, related_name="attachment")
     owner = models.ForeignKey(LocalActor, on_delete=models.CASCADE, related_name="attachment")
+    
+    def image_url(self):
+        return f"https://{settings.MAIN_DOMAIN}{self.image.url}"
 
 @receiver(models.signals.post_save, sender=Note)
 def note_delete_activity(sender, instance, created, **kwargs):
