@@ -1,3 +1,4 @@
+{% load bleach_tags %}
 <div class="comment">
     <a href="{{comment.actor.get_absolute_url}}">
         {% if comment.actor.profile.preferredUsername %}
@@ -10,7 +11,7 @@
         {{comment.actor}}<br>
     </small>
     <p>
-        {{comment.data.content|safe}}
+        {{comment.data.content|bleach|safe}}
     </p>
     <button type="link" onclick="show_hide_interactions('{{comment.uid}}')">reply to comment</button>
     <button type="link" onclick="like_comment('{{comment.uid}}')">Like</button>
