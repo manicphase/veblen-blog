@@ -1,5 +1,8 @@
 {% extends "Blog/base.html" %}
-
+{% load static %}
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'styles/note_summary.css' %}">
+{% endblock extrahead %}
 {% load i18n %}
 
 {% block title %}{{actor.display_name}}{% endblock title %}
@@ -7,5 +10,9 @@
 {% block body_class %}profile {{block.super}}{% endblock body_class %}
 
 {% block content %}
-blah
+{% for note in actor.notes.all %}
+<div>
+    {% include 'templates/Blog/note_summary.html' with note=note %}
+</div>
+{% endfor %}
 {% endblock content %}

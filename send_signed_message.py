@@ -122,6 +122,7 @@ def authorized_fetch(url, private_key, public_key_url, headers = None):
     headers["date"] = date_header
     headers["host"] = host
     headers["content-type"] = content_type
+    headers["accept"] = content_type
     headers["signature"] = signature_header
 
     response = requests.get(url, headers = headers)

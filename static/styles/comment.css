@@ -4,3 +4,6 @@
 .comment_interactions {
     display: none;
 }
+.comment_input {
+    width: 100%;
+}

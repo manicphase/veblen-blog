@@ -12,27 +12,41 @@
 {% block content %}
 {% if note.data.veblen %}
     <h1 class="compact_heading">{{note.data.veblen.title}}</h1>
-    {% include 'templates/Blog/main_note_details.html' %}
-
     {% if note.data.veblen.summary %}
     <div>
         <i>{{note.data.veblen.summary}}</i><br><br>
     </div>
     {% endif %}
+    {% if note.data.attachment %}
+        <img class="title_image" src="{{note.data.attachment.0.url}}"/><br>
+        <br>
+    {% endif %}
+
     <div class="content">
         {{note.data.veblen.body|safe}}
+    </div><br>
+    <div class="likes_bar">
+        {% include 'templates/Blog/main_note_details.html' %}
     </div>
+
 {% else %}
 {% include "templates/Blog/comment.html" with comment=note %}
 {% endif %}
 {% include 'templates/Blog/interactions.html' with note=note %}
-{% if note.replies.exists %}
 <h2>Comments</h2>
 <section id="replies">
-    
-{% for reply in note.replies.all reversed %}
-{% include "templates/Blog/comment.html" with comment=reply %}
-{% endfor %}
+    <p>
+        {% include 'templates/Blog/interaction_modal.html' with comment=note %}
+    </p>
+    {% if not note.replies.exists %}
+    There are no comments yet
+    {% else %}
+
+    {% for reply in note.replies.all reversed %}
+    {% include "templates/Blog/comment.html" with comment=reply %}
+    {% endfor %}
+
+    {% endif %}
+
 </section>
-{% endif %}
 {% endblock content %}

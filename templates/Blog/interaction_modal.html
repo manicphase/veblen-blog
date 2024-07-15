@@ -1,7 +1,13 @@
-responding to {{comment.actor}}
+<p>responding to {{comment.actor}}</p>
+{% if request.session.user %}
 <form method="POST" action="/blog/post_comment">
     {% csrf_token %}
     <input type="hidden" name="comment_id" value="{{comment.uid}}">
-    <textarea name="content" ></textarea>
+    <textarea class="comment_input" name="content" ></textarea>
     <button type="submit">Post comment</button>
 </form>
+{% else %}
+<i>
+    you need to log in or <a href="{{ comment.get_stub_url }}">copy this link</a> and paste it into the search bar in mastodon or other activitypub enabled client.
+</i>
+{% endif %}
