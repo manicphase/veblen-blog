@@ -4,7 +4,10 @@
 {% include 'templates/Blog/main_note_details.html' %}
 {% if note.data.attachment %}
     <a href="{{note.get_stub_url}}">
-        <img class="title_image_slice" src="{{note.data.attachment.0.url}}"/><br>
+        <img class="title_image_slice" 
+             src="{{note.data.attachment.0.url}}"
+             id="{{note.uid}}"
+             onload="apply_image_focal_point('{{note.uid}}', {{note.data.attachment.0.focus}})"/><br>
     </a>
 {% endif %}
 {% if note.data.veblen.summary %}

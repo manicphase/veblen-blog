@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{% static 'styles/note_summary.css' %}">
     <link rel="stylesheet" href="{% static 'styles/comment.css' %}">
     <script src="{% static 'scripts/comment_interactions.js' %}"></script>
+    <script src="{% static 'scripts/apply_image_focal_point.js' %}"></script>
 {% endblock extrahead %}
 {% load i18n %}
 
@@ -18,7 +19,10 @@
     </div>
     {% endif %}
     {% if note.data.attachment %}
-        <img class="title_image" src="{{note.data.attachment.0.url}}"/><br>
+        <img class="title_image" 
+             id="title_image" 
+             src="{{note.data.attachment.0.url}}" 
+             onload='apply_image_focal_point("title_image", {{note.data.attachment.0.focus}})'/><br>
         <br>
     {% endif %}
 

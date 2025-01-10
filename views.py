@@ -27,17 +27,21 @@ def create_blog(request):
         return render(request, "Blog/create_blog.html")
     elif request.method == "POST":
         print(request.FILES)
-        title_image = request.FILES.get("compressed_title_image")
+        title_image = request.FILES.get("title_image_upload")
         print(title_image)
         user = User.objects.get(username=request.session["user"])
         actor = user.activitypub_account.get()
         note = {k:v for k, v in request.POST.items() if k in ["title","summary","body"]}
         try:
-            note["title_image"] = request.FILES.get("compressed_title_image")
+            note["title_image"] = request.FILES.get("title_image_upload")
+            note["title_image"].description = request.POST.get("title_image_description", "")
+            note["title_image"].focus_x = request.POST.get("focus_x")
+            note["title_image"].focus_y = request.POST.get("focus_y")
+
         except:
             pass
-        #print("NOOOOOOOOOOTE")
-        #print(note)
+        print("NOOOOOOOOOOTE")
+        pprint(note["title_image"].__dict__)
         #pprint(request.POST)
         response = actor.create_note(note)
         return redirect(response.get_stub_url())
@@ -139,6 +143,7 @@ class ProfileView(ActorView):
         if self.request.accepts('text/html'):
             return render(self.request, self.get_template_names(), {'actor': actor, 'profile': actor.actor_json(), 'page': page,})
         else:
+            print(actor.__dict__)
             return JsonResponse(actor.actor_json(), content_type='application/activity+json')
 
 class UpdateProfileView(ActorView):

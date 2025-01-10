@@ -8,3 +8,7 @@ function body_changed() {
     preview_content.innerHTML = `<h1>${title_input.value}</h1>
                                         ${body_input.value}`
 }
+
+document.getElementById("title_image").addEventListener("click", e => {
+    console.log(e);
+})

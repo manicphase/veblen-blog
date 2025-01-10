@@ -16,3 +16,7 @@
 .preview_content {
     white-space: pre-line;
 }
+
+.title_image_description {
+    display: none;
+}

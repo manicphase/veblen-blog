@@ -476,11 +476,15 @@ class Note(models.Model):
         if to is not None:
             note.to.set(to)
         if title_image:
-            attachment = Attachment(owner=actor, note=note, image=title_image)
+            attachment = Attachment(owner=actor, 
+                                    note=note, 
+                                    image=title_image,
+                                    description=title_image.description,
+                                    focus_x = title_image.focus_x,
+                                    focus_y = title_image.focus_y)
             attachment.save()
-            note.data["attachment"] = [{"type": "Image",
-                                "mediaType": "image/png",
-                                "url": attachment.image_url(),}]
+            print(f"attachment url: {attachment.image_url()}")
+            note.data["attachment"] = [attachment.mastodon_attachment()]
             note.save()
 
         return note
@@ -558,9 +562,21 @@ class Attachment(models.Model):
     description = models.TextField(max_length=500, null=True, blank=True)
     note = models.ForeignKey(Note, on_delete=models.CASCADE, null=True, blank=True, related_name="attachment")
     owner = models.ForeignKey(LocalActor, on_delete=models.CASCADE, related_name="attachment")
-    
+    focus_x = models.FloatField(null=True, blank=True)
+    focus_y = models.FloatField(null=True, blank=True)
+
     def image_url(self):
         return f"https://{settings.MAIN_DOMAIN}{self.image.url}"
+    
+    def mastodon_attachment(self):
+        return {"type": "Image",
+                "mediaType": "image/png",
+                "url": self.image_url(),
+                "name": self.description,
+                "focus": {
+                    "x": float(self.focus_x),
+                    "y": float(self.focus_y),
+                }}
 
 @receiver(models.signals.post_save, sender=Note)
 def note_delete_activity(sender, instance, created, **kwargs):
